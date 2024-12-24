@@ -13,6 +13,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -66,8 +69,12 @@ class MainActivity : ComponentActivity() {
                     ) { backStackEntry ->
                         val query = backStackEntry.arguments?.getString("query") ?: ""
 
+                        var hasSearched by rememberSaveable { mutableStateOf(false) }
                         LaunchedEffect(key1 = query) {
-                            mercadoLibreViewModel.searchListOfProducts(query)
+                            if (!hasSearched) {
+                                mercadoLibreViewModel.searchListOfProducts(query)
+                                hasSearched = true
+                            }
                         }
                         val searchResults by mercadoLibreViewModel.uiState.collectAsState()
                         val searchState by mercadoLibreViewModel.searchState.collectAsState()
