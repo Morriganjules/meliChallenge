@@ -1,17 +1,14 @@
 package com.example.melichallenge.viewmodel
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.melichallenge.SearchState
-import com.example.melichallenge.UiStates
+import com.example.melichallenge.states.SearchState
+import com.example.melichallenge.states.UiStates
 import com.example.melichallenge.api.Status
 import com.example.melichallenge.api.respository.MercadoLibreRepository
-import com.example.melichallenge.model.SearchResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class MercadoLibreViewModel : ViewModel() {

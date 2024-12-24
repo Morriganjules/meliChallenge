@@ -78,5 +78,7 @@ dependencies {
     implementation ("com.google.accompanist:accompanist-placeholder-material:0.28.0")
     implementation("io.coil-kt:coil-compose:2.2.2")
     implementation ("androidx.navigation:navigation-compose:2.6.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
 
 }

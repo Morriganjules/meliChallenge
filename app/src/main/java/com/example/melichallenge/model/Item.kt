@@ -11,5 +11,6 @@ data class Item(
     val seller: Seller? = null,
     val shipping: Shipping? = null,
     @SerializedName("currency_id")
-    val currencyId: String? = null
+    val currencyId: String? = null,
+    val attributes: List<Attributes>? = null
 )

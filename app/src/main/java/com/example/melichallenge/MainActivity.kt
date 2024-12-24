@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
@@ -14,19 +15,25 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.melichallenge.screens.DetailScreen
 import com.example.melichallenge.screens.SearchInputScreen
 import com.example.melichallenge.screens.SearchDetailsScreen
 import com.example.melichallenge.screens.SplashScreen
+import com.example.melichallenge.states.DetailState
+import com.example.melichallenge.states.UiStates
 import com.example.melichallenge.ui.theme.MeliChallengeTheme
+import com.example.melichallenge.viewmodel.DetailsViewModel
 import com.example.melichallenge.viewmodel.MercadoLibreViewModel
 
 class MainActivity : ComponentActivity() {
     private val mercadoLibreViewModel: MercadoLibreViewModel by viewModels()
+    private val detailsViewModel: DetailsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,10 +80,14 @@ class MainActivity : ComponentActivity() {
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
                                     CircularProgressIndicator()
-                                    Text(text = "Estamos procesando tu busqueda =)")
+                                    Text(
+                                        text = "Estamos procesando tu busqueda =)",
+                                        modifier = Modifier.padding(top = 16.dp)
+                                    )
                                 }
 
                             }
+
                             UiStates.ServerError -> {}
                             is UiStates.Success -> {
                                 SearchDetailsScreen(
@@ -85,10 +96,48 @@ class MainActivity : ComponentActivity() {
                                     onSearch = { input ->
                                         mercadoLibreViewModel.searchListOfProducts(input.encodeString())
                                     },
-                                    onSelectedItem = { nickname, input ->
-
+                                    onSelectedItem = { selectedItem ->
+                                        navController.navigate("detail/${selectedItem}")
                                     }
                                 )
+                            }
+                        }
+                    }
+                    
+                    composable(
+                        "detail/{item}",
+                        arguments = listOf(navArgument("item") { type = NavType.StringType })
+                    ) { backStackEntry ->
+                        val item = backStackEntry.arguments?.getString("item") ?: ""
+                        val detailResults by detailsViewModel.detailState.collectAsState()
+
+                        LaunchedEffect(key1 = item) {
+                            detailsViewModel.getItem(item)
+                        }
+                        when (val screenState = detailResults) {
+                            DetailState.Loading -> {
+                                Column(
+                                    modifier = Modifier.fillMaxSize(),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+
+                            }
+
+                            DetailState.ServerError -> {}
+                            is DetailState.Success -> {
+                                screenState.response.attributes?.let {
+                                    DetailScreen(
+                                        name = screenState.response.title ?: "unknown",
+                                        thumbnail = screenState.response.thumbnail ?: "unknown",
+                                        price = screenState.response.price ?: 0f,
+                                        currency = screenState.response.currencyId ?: "unknown",
+                                        shipping = screenState.response.shipping,
+                                        attributes = it
+                                    )
+                                }
                             }
                         }
                     }

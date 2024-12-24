@@ -1,4 +1,4 @@
-package com.example.melichallenge
+package com.example.melichallenge.states
 
 enum class SearchState {
     SEARCHING,

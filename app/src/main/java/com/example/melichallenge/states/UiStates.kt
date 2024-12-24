@@ -1,4 +1,4 @@
-package com.example.melichallenge
+package com.example.melichallenge.states
 
 import com.example.melichallenge.model.SearchResponse
 

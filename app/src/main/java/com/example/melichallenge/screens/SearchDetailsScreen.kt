@@ -36,19 +36,23 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.melichallenge.SearchState
+import com.example.melichallenge.states.SearchState
 import com.example.melichallenge.addCurrency
 import com.example.melichallenge.formatToLocalizedString
 import com.example.melichallenge.model.Item
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
+import com.google.gson.Gson
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
+@OptIn(ExperimentalEncodingApi::class)
 @Composable
 fun SearchDetailsScreen(
     state: SearchState,
     onSearch: (String) -> Unit,
-    onSelectedItem: (String, String) -> Unit,
+    onSelectedItem: (String) -> Unit,
     items: List<Item>
 ) {
     var searchInput by rememberSaveable { mutableStateOf("") }
@@ -112,8 +116,11 @@ fun SearchDetailsScreen(
                     items(items.size) { item ->
                         ResultItem(
                             item = items[item],
-                            onSelectedItem = { nickname ->
-                                onSelectedItem(nickname, searchInput)
+                            onSelectedItem = {
+                                val gson = Gson()
+                                val json = gson.toJson(items[item])
+                                val base64Encoded = Base64.encode(json.toByteArray(Charsets.UTF_8))
+                                onSelectedItem(base64Encoded)
                             }
                         )
                     }
@@ -173,7 +180,9 @@ fun ResultItem(
                             overflow = TextOverflow.Ellipsis
                         )
                     }
-                PillTabView(modifier = Modifier, titleText = "Envío gratis.")
+                if(item.shipping?.freeShipping == true){
+                    PillTabView(modifier = Modifier, titleText = "Envío gratis.")
+                }
             }
         }
     }
