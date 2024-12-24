@@ -55,7 +55,11 @@ fun SearchInputScreen(
 
             OutlinedTextField(
                 value = searchInput,
-                onValueChange = { searchInput = it },
+                onValueChange = { newText ->
+                    if (!newText.contains('\n')) {
+                        searchInput = newText
+                    }
+                },
                 label = { Text("Buscar") },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
