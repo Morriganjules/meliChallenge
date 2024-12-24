@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MeliChallengeTheme {
                 val navController = rememberNavController()
-                //prueba commit
+
                 NavHost(
                     navController = navController,
                     startDestination = "splash"
