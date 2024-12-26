@@ -16,11 +16,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,7 +51,7 @@ import com.google.gson.Gson
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-@OptIn(ExperimentalEncodingApi::class)
+@OptIn(ExperimentalEncodingApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SearchDetailsScreen(
     state: SearchState,
@@ -63,36 +67,62 @@ fun SearchDetailsScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        OutlinedTextField(
-            value = searchInput,
-            onValueChange = { newText ->
-                if (!newText.contains('\n')) {
-                    searchInput = newText
-                }
-            },
-            label = { Text("Buscar") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(onSearch = {
-                keyboardController?.hide()
-                onSearch(searchInput)
-            })
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Button(
-            onClick = {
-                keyboardController?.hide()
-                onSearch(searchInput)
-                searchInput = ""
-            },
-            modifier = Modifier.fillMaxWidth()
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = Color(0xFF2a3175), shape = RoundedCornerShape(50))
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Buscar")
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search Icon",
+                tint = Color.White,
+                modifier = Modifier
+                    .size(24.dp)
+                    .padding(start = 8.dp)
+                    .clickable {
+                        if (searchInput.isNotBlank()) {
+                            keyboardController?.hide()
+                            onSearch(searchInput)
+                            searchInput = ""
+                        }
+                    }
+            )
+
+            OutlinedTextField(
+                value = searchInput,
+                onValueChange = { newText ->
+                    if (!newText.contains('\n')) {
+                        searchInput = newText
+                    }
+                },
+                placeholder = { Text("Buscar", color = Color.White) },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White
+                ),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 8.dp)
+                    .background(Color.Transparent),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        if (searchInput.isNotBlank()) {
+                            keyboardController?.hide()
+                            onSearch(searchInput)
+                            searchInput = ""
+                        }
+                    }
+                )
+            )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         when (state) {
             SearchState.SEARCHING -> {
@@ -180,7 +210,7 @@ fun ResultItem(
                             overflow = TextOverflow.Ellipsis
                         )
                     }
-                if(item.shipping?.freeShipping == true){
+                if (item.shipping?.freeShipping == true) {
                     PillTabView(modifier = Modifier, titleText = "Envío gratis.")
                 }
             }
