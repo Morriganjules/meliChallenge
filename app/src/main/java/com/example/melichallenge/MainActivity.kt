@@ -25,6 +25,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.melichallenge.screens.DetailScreen
+import com.example.melichallenge.screens.ErrorScreen
 import com.example.melichallenge.screens.SearchInputScreen
 import com.example.melichallenge.screens.SearchDetailsScreen
 import com.example.melichallenge.screens.SplashScreen
@@ -95,7 +96,15 @@ class MainActivity : ComponentActivity() {
 
                             }
 
-                            UiStates.ServerError -> {}
+                            UiStates.ServerError -> {
+                                ErrorScreen(
+                                    errorMessage = "Ocurrió un error inesperado. Por favor, inténtalo nuevamente.",
+                                    buttonText = "Reintentar",
+                                    onButtonClick = {
+                                        navController.navigate("search_input")
+                                    }
+                                )
+                            }
                             is UiStates.Success -> {
                                 SearchDetailsScreen(
                                     state = searchState,
@@ -133,7 +142,15 @@ class MainActivity : ComponentActivity() {
 
                             }
 
-                            DetailState.ServerError -> {}
+                            DetailState.ServerError -> {
+                                ErrorScreen(
+                                    errorMessage = "Ocurrió un error inesperado. Por favor, inténtalo nuevamente.",
+                                    buttonText = "Reintentar",
+                                    onButtonClick = {
+                                        navController.navigate("search_input")
+                                    }
+                                )
+                            }
                             is DetailState.Success -> {
                                 screenState.response.attributes?.let {
                                     DetailScreen(
